@@ -15,7 +15,15 @@ router.post('/login', async(req,res)=>{
     // 校验密码是否正确
     if(user.comparePassword(password)){
         //通过，可以登录
-        res.send('登录成功')
+        // 给 req.session 上添加一个 auth  属性，auth 属性里保存当前用户的ID 和usersname 等信息
+        // 后续判断用户是否登录，只需要判断 req.session 中有没有 auth 这个属性即可
+        req.session.auth = {
+            userId:user._id,
+            username:user.username
+        };
+        //从 req.session.redirect 中获取要回到的页面地址
+        let redirect = req.session.redirect || '/'
+        res.redirect(redirect)
     }else{
         //不通过，用户名或密码不正确
         throw new Error('用户名或密码不正确')
